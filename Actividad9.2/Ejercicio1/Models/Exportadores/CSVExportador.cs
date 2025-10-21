@@ -1,23 +1,26 @@
-﻿namespace Ejercicio1.Models.Exportadores
+﻿namespace Ejercicio1.Models.Exportadores;
+
+public class CSVExportador : IExportador
 {
-    public class CSVExportador : IExportable
+    public string Exportar(Multa m)
     {
-        public string Exportar(IExportador exportador)
-        {
-            throw new NotImplementedException();
-        }
+        return $"{m.Patente};{m.Vencimiento:dd/MM/yyyy};{m.Importar:f2}";
+    }
 
-        public bool Importar(string data, Multa multa)
-        {
-            string[] campos = data.Split(';');
-            string patente = campos[0];
-            DateOnly vencimiento = DateOnly.ParseExact(campos[1], "dd/MM/yy");
-            double importe = Convert.ToDouble(campos[2]);
+    public bool Importar(string data, Multa m)
+    {
+        string[] campos = data.Split(';');
 
-            multa.Patente = patente;
-            multa.Importe = importe;
-            multa.Vencimiento = vencimiento;
+        if (campos.Length != 3) return false;
 
-        }
+        string patente = campos[0];
+        DateOnly vencimiento = DateOnly.ParseExact(campos[1], "dd/MM/yyyy");
+        double importe = double.Parse(campos[2]);
+
+        m.Patente = patente;
+        m.Vencimiento = vencimiento;
+        m.Importe = importe;
+
+        return true;
     }
 }
