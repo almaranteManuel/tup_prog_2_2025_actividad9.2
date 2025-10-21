@@ -1,6 +1,6 @@
 ﻿namespace Ejercicio1
 {
-    partial class Form1
+    partial class FormPrincipal
     {
         /// <summary>
         ///  Required designer variable.
@@ -113,6 +113,7 @@
             btnImportar.TabIndex = 8;
             btnImportar.Text = "Importar";
             btnImportar.UseVisualStyleBackColor = true;
+            btnImportar.Click += btnImportar_Click;
             // 
             // btnExportar
             // 
@@ -146,7 +147,7 @@
             // 
             openFileDialog1.FileName = "openFileDialog1";
             // 
-            // Form1
+            // FormPrincipal
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -162,7 +163,7 @@
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
-            Name = "Form1";
+            Name = "FormPrincipal";
             Text = "Form1";
             ResumeLayout(false);
             PerformLayout();
