@@ -2,6 +2,7 @@
 
 namespace Ejercicio1.Models;
 
+[Serializable]
 public class Multa:IComparable, IExportable
 {
     public string Patente { get; set; }

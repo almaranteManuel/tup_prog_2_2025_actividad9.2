@@ -123,6 +123,7 @@
             btnExportar.TabIndex = 9;
             btnExportar.Text = "Exportar";
             btnExportar.UseVisualStyleBackColor = true;
+            btnExportar.Click += btnExportar_Click;
             // 
             // listBox1
             // 

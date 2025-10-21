@@ -1,11 +1,13 @@
 using Ejercicio1.Models;
 using Ejercicio1.Models.Exportadores;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Ejercicio1
 {
     public partial class FormPrincipal : Form
     {
-        List<IExportable> exportables = new List<IExportable>();
+        List<IExportable> multas = new List<IExportable>();
+        string archivoPrueba = string.Empty;
         public FormPrincipal()
         {
             InitializeComponent();
@@ -22,19 +24,19 @@ namespace Ejercicio1
 
             nuevo = new Multa(patente, vencimiento, importe);
 
-            exportables.Sort();
+            multas.Sort();
 
-            int idx = exportables.BinarySearch(nuevo);
+            int idx = multas.BinarySearch(nuevo);
 
             if (idx >= 0)
             {
-                Multa multa = exportables[idx] as Multa;
+                Multa multa = multas[idx] as Multa;
                 multa.Importe += importe;
                 if (multa.Vencimiento < ((Multa)nuevo).Vencimiento)
                     multa.Vencimiento = ((Multa)nuevo).Vencimiento;
             }
             else
-                exportables.Add(nuevo);
+                multas.Add(nuevo);
 
             btnActualizar.PerformClick();
         }
@@ -54,7 +56,7 @@ namespace Ejercicio1
         {
             listBox1.Items.Clear();
 
-            foreach (IExportable i in exportables)
+            foreach (IExportable i in multas)
             {
                 listBox1.Items.Add(i);
             }
@@ -92,16 +94,16 @@ namespace Ejercicio1
 
                         if (nuevo.Importar(linea, exportador) == true)
                         {
-                            int idx = exportables.BinarySearch(nuevo);
+                            int idx = multas.BinarySearch(nuevo);
                             if (idx >= 0)
                             {
-                                Multa multa = exportables[idx] as Multa;
+                                Multa multa = multas[idx] as Multa;
                                 multa.Importe += ((Multa)nuevo).Importe;
                                 if (multa.Vencimiento < ((Multa)nuevo).Vencimiento) ;
                                 multa.Vencimiento = ((Multa)nuevo).Vencimiento;
                             }
                             else
-                                exportables.Add(nuevo);
+                                multas.Add(nuevo);
                         }
                     }
                 }
@@ -120,6 +122,46 @@ namespace Ejercicio1
             btnActualizar.PerformClick();
         }
 
+        private void btnExportar_Click(object sender, EventArgs e)
+        {
+            // mostramos el SaveFileDialog
+            saveFileDialog1.Filter = "(csv)|*.csv|(json)|*.json|(txt)|*.txt|(xml)|*.xml";
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string path = saveFileDialog1.FileName;
+                int tipo = saveFileDialog1.FilterIndex; // 1 para CSV, 2 para JSON, etc.
+
+                // creamos un Exportador usando el Factory
+                IExportador exportador = (new ExportadorFactory()).GetInstance(tipo);
+
+                StreamWriter sw = null;
+                try
+                {
+                    sw = new StreamWriter(path);
+
+                    // iteramos sobre la lista y exportamos cada elemento
+                    foreach (IExportable item in multas)
+                    {
+                        // La interfaz IExportable tiene el Exportar()
+                        // que usa el IExportador para darle formato a los datos.
+                        string lineaExportada = item.Exportar(exportador);
+                        sw.WriteLine(lineaExportada);
+                    }
+
+                    MessageBox.Show($"Datos exportados correctamente a: {path}", "Exportación Exitosa");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al exportar: " + ex.Message);
+                }
+                finally
+                {
+                    if (sw != null)
+                        sw.Close();
+                }
+            }
+        }
     }
 }
 
